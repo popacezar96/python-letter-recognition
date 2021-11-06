@@ -1,0 +1,56 @@
+{% extends "mostenire.html" %}
+{% block continut %}
+
+    <title>Propozitie</title>
+
+    <p></p>
+    <br>
+    <div class="container bg-white pt-3 my-3 border w-50">
+        <h4><i>Detector de propozitie</i></h4>
+            <p></p>
+            <form id="upload-form" name="frm" action="{{ url_for('propozitie') }}" method="POST" enctype="multipart/form-data">
+                <div class="custom-file mb-3">
+                    <input type="file" class="custom-file-input" name="file" accept="image/*" id="user-input" multiple></br>
+                    <label class="custom-file-label" for="user-input">Choose file</label>
+                    <p></p>
+                </div>
+                <input type="submit" class="btn btn-info" value="send" onclick="showInput();" >
+
+            </form>
+        <p></p>
+    </div>
+
+    {% if propozitie != '' and poza_propozitie !='' %}
+
+        <div class="container border bg-white pt-3 my-3 w-50">
+
+            <div class="row text-center pb-2">
+                <div class="col my-2 pb-2 pl-4 pt-3">
+                    <img id ="output" class="img-thumbnail w-80 h-80" src="{{url_for('static',filename=poza_propozitie)}}" >
+                </div>
+                <div class="col my-3 pt-4">
+                    <img id ="output" class="w-75 h-50 text-center" src="static/egal4.jpg"   >
+                </div>
+                <div class="col my-3 pt-4 pr-4">
+                         <div class="row">
+                             <p></p>
+                         </div>
+
+                    <span id='display'></span><h4>{{propozitie}}</h4>
+                </div>
+
+            </div>
+        </div>
+
+
+    {% endif %}
+
+
+    <script>
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
+
+{% endblock continut %}

@@ -1,0 +1,72 @@
+{% extends "mostenire.html" %}
+{% block continut %}
+
+    <title>Litera</title>
+
+    <p></p>
+    <br>
+    <div class="container bg-white pt-3 my-3 border w-50">
+        <h4><i>Detector litere</i></h4>
+            <p></p>
+                <form id = "upload-form" name="frm" action = "{{ url_for('litera') }}" method = "POST" enctype = "multipart/form-data">
+                    <div class="custom-file mb-3">
+                        <input type = "file" class="custom-file-input" name="file" accept="image/*" id="user-input" multiple></br>
+                        <label class="custom-file-label" for="user-input">Choose file</label>
+                        <p></p>
+                    </div>
+                    <input type = "submit" class="btn btn-info" value = "send" onclick="showInput();">
+                </form>
+        <p></p>
+    </div>
+
+    {% if litera != '' and poza_litera !='' %}
+        <div class=" container border bg-white pt-3 my-3 w-50 ">
+
+
+            <div class="row text-center pb-2">
+                <div class="col  my-3 ">
+                   <img id ="output" class="img-thumbnail w-50" src="{{url_for('static',filename=poza_litera)}}">
+                </div>
+                <div class="col my-3 pt-4">
+                   <img id ="output" class="w-100 h-50 text-center" src="static/egal4.jpg">
+                </div>
+                <div class="col my-3  ">
+                    <br>
+                    <p></p>
+                    <span id='display'></span><h1>{{litera}}</h1>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+
+
+    {% if prea_multe %}
+
+    <div class=" container border bg-white pt-3 my-3 w-50 ">
+            <div class="row text-center">
+                <div class="col my-3 pb-2 pl-4">
+                    <p><img id ="output" class="img-thumbnail w-75 h-50" src="{{url_for('static',filename=poza_litera)}}" width="200"></p>
+                </div>
+                <div class="col my-3 pt-4">
+                    <p><span id='display'></span><big><b>Prea multe litere in imagine!</b></big> </p>
+                </div>
+            </div>
+    </div>
+
+    {% endif %}
+
+
+
+    <script>
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
+
+<style>
+
+</style>
+
+{% endblock continut %}

@@ -1,0 +1,100 @@
+{% extends "mostenire.html" %}
+{% block continut %}
+
+
+<title>Home</title>
+
+<p></p>
+<br>
+
+
+
+    <div class="container col-8 bg-white py-3 my-3 border w-50 ">
+
+        <br>
+        <div class=" border border-left-0 border-right-0 border-top-0 text-center">
+             <h3 class=" py-3 px-3 ">Despre proiect</h3>
+        </div>
+        <br>
+        <p></p>
+
+        <div class=" container border a py-3">
+
+            <p>Acest proiect reprezintă o punere in practică
+                a algoritmilor ce folosesc rețele neuronale.</p>
+
+            <p>Scopul acestuia este de a aplica acești algoritmi pentru a putea
+            clasifica litera prezentă într-o imagine dată.</p>
+
+            <div style="font-family: Georgia"> Aplicația este impărțită în trei subramuri:</div>
+
+            <p></p>
+                <dl class="">
+                    <dt class="pl-4">
+                        1.Detecția unei singure litere
+                    </dt>
+
+                    <dt class="pl-4">
+                        2.Detecția unui cuvant
+                    </dt>
+
+                    <dt class="pl-4">
+                        3.Detecția unei propoziții
+                    </dt>
+                </dl>
+
+            <p>Fiecare subramură se bazează pe același principiu, sub forma unei
+            rețele neuronale de convoluție (CNN), dar fiecare dintre acestea este supusă unui
+            număr suplimentar de etape de procesare grafică, în funcție
+            de nivelul complexității cerinței.</p>
+
+            <p></p>
+
+            <p>Pentru dezvoltarea aplicației web am folosit framework-ul
+                <a class="text-primary" href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> ce suportă
+                cod scris in Python și bibliotecile acestuia, inclusiv cele folosite pentru încărcarea
+                modelului antrenat și pentru prelucrarea input-ului sub forma imaginilor
+                introduse de utilizator.</p>
+
+            <p></p>
+
+            <p>Scrierea și antrenarea modelului care se ocupa cu detecția fiecarei litere în
+                parte, a fost facută cu ajutorul interfetei
+                <a class="text-primary" href="https://jupyterlab.readthedocs.io/en/stable/">JupyterLab</a>, datorită atributelor
+                oferite de aceasta printre care enumerăm:</p>
+
+            <p></p>
+            <dl>
+                <dt class="pl-4 b">
+                    <i>-interfața cu utilizatorul</i>
+                </dt>
+
+                 <dt class="pl-4 b">
+                     <i>-posibilitatea executiei flexibile a unor celule de cod individuale</i>
+                </dt>
+
+            </dl>
+        </div>
+
+    </div>
+
+<style>
+
+    div.a {
+
+    font-size: 23px;
+    text-indent: 50px;
+    }
+    dt.b {
+
+    font-size: 20px;
+    }
+
+    p {
+
+    font-family: Georgia, serif;
+    }
+
+</style>
+
+{% endblock continut %}
