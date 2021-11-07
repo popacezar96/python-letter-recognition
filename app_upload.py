@@ -9,7 +9,7 @@ from indici import toti_indicii, litere_inalte_de_incredere, litere_mici_de_incr
 
 from keras.models import load_model
 
-#### Ca sa pot apela model.predict() in mai multe locuri####
+#### Helps call model.predict() on different routes ####
 
 from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import InteractiveSession
@@ -27,8 +27,9 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 model = tf.keras.models.load_model('sigmoid_tf_576_doar_litere.h5')
 
 def fct1(imagine):
-    ### Procesare grafica pentru gasirea contururilor si incadrarea lor in dreptunghiuri ###
-
+    
+    ### Graphical processing used to find and place contours inside rectangles ###
+    
     ret, img_thresh = cv.threshold(imagine, 180, 255, cv.THRESH_BINARY)
 
     kernel = np.ones((2, 2), np.uint8)
@@ -49,7 +50,9 @@ def fct1(imagine):
 
 
 def fct2(img_thresh):
-    ### Redimensionare si clasificarea imaginii ###
+
+    ### Image resizing and classification ###
+    
     bucata = cv.resize(img_thresh, (28, 28))
 
     bucata_4D = bucata.reshape(1, 28, 28, 1)
@@ -65,11 +68,12 @@ def fct2(img_thresh):
 
 def fct3(contururi, img_thresh):
 
-    ### SORTARE CONTURURI de la STANGA la DREAPTA ###
+    ### Sorting contours from left to right ###
+    
     if len(contururi) > 1:
         contururi_sortate = contururi[np.argsort(contururi[:, 0])]
 
-        ### Gasirea contururilor din interiorul altor contururi (contururi suplimentare)###
+        ### Finding potential contours inside other contours (letters like O, B, A as opposed to letters like I, S, K, etc) ###
 
         contururi_gresite = []
         contururi_gresite.clear()
@@ -83,7 +87,7 @@ def fct3(contururi, img_thresh):
                     contururi_gresite.append(i)
             con += 1
 
-        ########## Eliminare contururi suplimentare #########
+        #### Removing the additional contours found int the previous step ####
 
         for x, y, w, h in contururi_sortate:
             for a, b, c, d in contururi_gresite:
@@ -92,7 +96,10 @@ def fct3(contururi, img_thresh):
                                                   np.where((contururi_sortate == [x, y, w, h]).all(axis=1))[
                                                       0][0], axis=0)
         if len(contururi_sortate) > 1:
-            ####Cod pt literele i si j individuale####
+            
+            #Placing the 2 contours of the letters i and j inside the same ractangle to avoid 
+            #classifying them as 2 different letters
+            
             vector_i = []
             jumatati = []
             for x, y, w, h in contururi_sortate:
@@ -157,11 +164,12 @@ def fct3(contururi, img_thresh):
         return fct2(img_thresh)
 
 def fct4(rezultat_fct_3,img_thresh):
-    ######## Prelucrare grafica pentru cuvinte ########
+    
+    ######## Graphical processing for words ########
 
     contururi_sortate = rezultat_fct_3[np.argsort(rezultat_fct_3[:, 0])]
 
-    ############# CALCULAREA DISTANTEI DINTRE LITERE ###############
+    ###  Calculating the distance between letters ###
 
     distanta = []
     cont_dist = 0
@@ -194,19 +202,19 @@ def fct4(rezultat_fct_3,img_thresh):
             img_thresh[y - distanta_adaptata:inaltime, x - distanta_adaptata:grosime])
         bucata = cv.resize(bucata, (28, 28))
 
-        # Modificare pt tf 2.0
+        # Using the tf.cast() as required by tensorflow 2.0
 
         bucata_4D = bucata.reshape(1, 28, 28, 1)
         bucata_4D = tf.cast(bucata_4D, tf.float32)
 
         pred = model.predict(bucata_4D)
 
-        ####################
+        ###############
 
         pr = pred.argmax()
         litera = list(toti_indicii.keys())[list(toti_indicii.values()).index(pr)]
 
-        ##### Dictionarele nu pot avea doua key identice asa ca adaug un contor la fiecare key ###
+        ##### Using numbers as keys for each lettern in the dictionary ###
 
         if litera in dictionar_litere:
 
@@ -217,7 +225,7 @@ def fct4(rezultat_fct_3,img_thresh):
         else:
             dictionar_litere.update({litera: y})
 
-            #######################################################
+        #############################
 
         if litera[0:5] in litere_inalte_de_incredere:
 
@@ -228,7 +236,10 @@ def fct4(rezultat_fct_3,img_thresh):
 
     vector_litere_final = []
 
-    ### Daca avem sigur litere inalte si litere mici ###
+    ##### Executing different code depending on the height of different letters relative to the others
+    # this helps avoid potential misclassifications of lower case letters as upper case or vice-versa (letters like o and O)
+    
+    ### If there are upper letters lower letters in the list of classified letters###
     if dict_litere_mici and dict_litere_mari:
 
         min_lit_mica = max(dict_litere_mici[i] for i in dict_litere_mici)
@@ -252,7 +263,7 @@ def fct4(rezultat_fct_3,img_thresh):
             else:
                 vector_litere_final.append(litera[0])
 
-    ### Daca avem sigur litere mici ###
+    ### If there are surely lower letters but not upper letters###
     elif dict_litere_mici and not dict_litere_mari:
 
         max_lit_mica = min(dict_litere_mici[i] for i in dict_litere_mici)
@@ -269,7 +280,7 @@ def fct4(rezultat_fct_3,img_thresh):
             else:
                 vector_litere_final.append(litera[0])
 
-    ### Daca avem sigur litere mari ###
+    ### If there are surely upper letters ###
     elif not dict_litere_mici and dict_litere_mari:
 
         min_lit_mare = max(dict_litere_mari[i] for i in dict_litere_mari)
@@ -285,7 +296,7 @@ def fct4(rezultat_fct_3,img_thresh):
             else:
                 vector_litere_final.append(litera[0])
 
-    ### Nu stim daca literele sunt mici sau mari ###
+    ### if based on the relative height it's not obvious that the letters are upper or lower case ###
     else:
 
         cea_mai_scunda = max(dictionar_litere[i] for i in dictionar_litere)
@@ -294,7 +305,7 @@ def fct4(rezultat_fct_3,img_thresh):
         diferenta = cea_mai_scunda - cea_mai_inalta
 
         if diferenta >= 5:
-            ### Avem litere mici si mari ###
+            ### There are upper and lower letters based on some approximation of the difference in their height ###
             for litera in dictionar_litere:
 
                 if cea_mai_scunda - dictionar_litere[litera] < dictionar_litere[
@@ -308,9 +319,10 @@ def fct4(rezultat_fct_3,img_thresh):
                 else:
                     vector_litere_final.append(litera[0])
         else:
-            ### Avem doar litere mari sau doar litere mici ###
+            ### If there are only upper or lower letters convert all to lower case 
+            #sice it's more likely that a work only has lower case letters###
+            
             for litera in dictionar_litere:
-                ### Le fac pe toate mici mai probabil sa apara doua litere mici decat doua litere mari intr-un cuvant ###
                 vector_litere_final.append(litera[0].lower())
 
     vector_litere_final = ''.join(vector_litere_final) + ' '
